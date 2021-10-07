@@ -1,0 +1,62 @@
+// This script will calculate a 'Remaining' Story points value that is intended to help when an issue spans more than 1 sprint
+// It requires a value to have been populated into the "Story Points" field, and "Completed Story Points" fields to work.
+//
+
+// Staging custom field IDs
+String StoryPoints = "customfield_"
+String completedStoryPoints = "customfield_"
+
+
+// Prod custom field IDs
+// String StoryPoints = "customfield_"
+// String completedStoryPoints = "customfield_"
+
+//
+//  Setup ability to access fields
+//
+def issueManager = ComponentAccessor.getIssueManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+//
+// grab fields
+//
+def storyPointsField = customFieldManager.getCustomFieldObject(storyPoints);
+def completedStoryPointsField = customFieldManager.getCustomFieldObject(completedStoryPoints);
+
+//
+// grab values from fields
+//
+def storyPointsFieldValue = (float)issue.getCustomFieldValue(storyPointsField)
+def completedStoryPointsValue = (float)issue.getCustomFieldValue(completedStoryPointsField)
+
+if (storyPointsFieldValue != null && completedStoryPointsValue != null)
+
+return storyPointsFieldValue - completedStoryPointsValue
+
+
+/
+//  Staging custom field IDs
+//
+float storyPoints = "customfield_"
+float completedStoryPoints = "customfield_"
+
+//
+//  Setup ability to access fields
+//
+def issueManager = ComponentAccessor.getIssueManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+//
+// grab fields
+//
+def storyPointsField = customFieldManager.getCustomFieldObject(storyPoints);
+def completedStoryPointsField = customFieldManager.getCustomFieldObject(completedStoryPoints);
+
+//
+// grab values from fields
+//
+def storyPointsFieldValue = (float)issue.getCustomFieldValue(storyPointsField)
+def completedStoryPointsValue = (float)issue.getCustomFieldValue(completedStoryPointsField)
+
+if (storyPointsFieldValue != null && completedStoryPointsValue != null)
+return storyPointsFieldValue - completedStoryPointsValue
