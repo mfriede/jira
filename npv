@@ -8,10 +8,10 @@ import com.atlassian.jira.issue.fields.CustomField
 //  
 //  Staging custom field IDs
 //  
-String reach = "customfield_21050"
-String impact = "customfield_21051"
-String confidence = "customfield_21053"
-String effort =  "customfield_20953"
+String reach = "customfield_19453"
+String impact = "customfield_19454"
+String confidence = "customfield_19455"
+String effort =  "customfield_19456"
 
 // 
 //  Setup ability to access fields
@@ -32,15 +32,13 @@ def effortField = customFieldManager.getCustomFieldObject(effort);
 // grab values from fields
 //
 
-def reachFieldValue = (float)issue.getCustomFieldValue(reachField)
-def impactFieldValue = (float)issue.getCustomFieldValue(impactField)
-def confidenceFieldValue = (float)issue.getCustomFieldValue(confidenceField)
-def effortFieldValue = (float)issue.getCustomFieldValue(effortField)
+def reachFieldValue = issue.getCustomFieldValue(reachField) as Double
+def impactFieldValue = issue.getCustomFieldValue(impactField) as Double
+def confidenceFieldValue = issue.getCustomFieldValue(confidenceField) as Double
+def effortFieldValue = issue.getCustomFieldValue(effortField) as Double
 
-if (reachFieldValue >= 1 && reachFieldValue <= 5 )
-{
-//	reachField.clearError()
-    return reachFieldValue * impactFieldValue * confidenceFieldValue
+if (reachFieldValue != null && impactFieldValue != null && confidenceFieldValue != null) {
+    return(reachFieldValue * impactFieldValue * confidenceFieldValue).round(2)
 }
-
+else return(null)
 
