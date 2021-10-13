@@ -1,62 +1,64 @@
 // This script will calculate a 'Remaining' Story points value that is intended to help when an issue spans more than 1 sprint
 // It requires a value to have been populated into the "Story Points" field, and "Completed Story Points" fields to work.
 //
+import com.opensymphony.workflow.InvalidInputException
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.MutableIssue
 
-// Staging custom field IDs
-String StoryPoints = "customfield_"
-String completedStoryPoints = "customfield_"
-
+//Staging custom field IDs
+//String storyPoints = "customfield_10555"
+//String completedStoryPoints = "customfield_21650"
 
 // Prod custom field IDs
-// String StoryPoints = "customfield_"
-// String completedStoryPoints = "customfield_"
+String storyPoints = "customfield_10555"
+String completedStoryPoints = 21559
 
 //
 //  Setup ability to access fields
-//
 def issueManager = ComponentAccessor.getIssueManager()
 def customFieldManager = ComponentAccessor.getCustomFieldManager()
+MutableIssue mutableIssue = (issueManager.getIssueByCurrentKey(issue.getKey()))
 
 //
 // grab fields
 //
 def storyPointsField = customFieldManager.getCustomFieldObject(storyPoints);
-def completedStoryPointsField = customFieldManager.getCustomFieldObject(completedStoryPoints);
+def completedStoryPointsField = customFieldManager.getCustomFieldObject(21559);
 
-//
-// grab values from fields
-//
-def storyPointsFieldValue = (float)issue.getCustomFieldValue(storyPointsField)
-def completedStoryPointsValue = (float)issue.getCustomFieldValue(completedStoryPointsField)
+// debugging
+//log.warn issue.getCustomFieldValue(storyPointsField)
+//log.warn issue.getCustomFieldValue(completedStoryPointsField)
 
-if (storyPointsFieldValue != null && completedStoryPointsValue != null)
+// set completedStoryPoints to 0 if the field is null
+if (issue.getCustomFieldValue(completedStoryPointsField) == null)
+{
+  log.warn 'completedStoryPoints was null, updated to 0 '
+  mutableIssue.setCustomFieldValue(completedStoryPointsField, 0)
+}
 
-return storyPointsFieldValue - completedStoryPointsValue
 
+// If Story points field is set, and completedStoryPointsField is not set, 
+// set Remaining Story Points = Story Points
+if ((issue.getCustomFieldValue(storyPointsField) != null) && (issue.getCustomFieldValue(completedStoryPointsField) == null))
+{   
+	float storyPointsFieldValue = (float)issue.getCustomFieldValue(storyPointsField)
+	return storyPointsFieldValue
+}
 
-/
-//  Staging custom field IDs
-//
-float storyPoints = "customfield_"
-float completedStoryPoints = "customfield_"
+// If Story Points is set, and Completed Story points is set, 
+// return  Story Points - Completed Story points
+if ((issue.getCustomFieldValue(storyPointsField) != null) && (issue.getCustomFieldValue(completedStoryPointsField) != null))
+{   
+	float storyPointsFieldValue = (float)issue.getCustomFieldValue(storyPointsField)
+	float completedStoryPointsValue = (float)issue.getCustomFieldValue(completedStoryPointsField)
 
-//
-//  Setup ability to access fields
-//
-def issueManager = ComponentAccessor.getIssueManager()
-def customFieldManager = ComponentAccessor.getCustomFieldManager()
-
-//
-// grab fields
-//
-def storyPointsField = customFieldManager.getCustomFieldObject(storyPoints);
-def completedStoryPointsField = customFieldManager.getCustomFieldObject(completedStoryPoints);
-
-//
-// grab values from fields
-//
-def storyPointsFieldValue = (float)issue.getCustomFieldValue(storyPointsField)
-def completedStoryPointsValue = (float)issue.getCustomFieldValue(completedStoryPointsField)
-
-if (storyPointsFieldValue != null && completedStoryPointsValue != null)
-return storyPointsFieldValue - completedStoryPointsValue
+	if (completedStoryPointsValue == 0 || completedStoryPointsValue == null)
+		return storyPointsFieldValue
+		
+    else if (completedStoryPointsValue > 0 )
+        return storyPointsFieldValue - completedStoryPointsValue
+}
