@@ -1,0 +1,43 @@
+import com.opensymphony.workflow.InvalidInputException
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+
+//  
+//  Staging custom field IDs
+//  
+String reach = "customfield_19453"
+String impact = "customfield_19454"
+String confidence = "customfield_19455"
+String effort =  "customfield_19456"
+
+// 
+//  Setup ability to access fields
+//
+def issueManager = ComponentAccessor.getIssueManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+//
+// grab fields
+//
+
+def reachField = customFieldManager.getCustomFieldObject(reach);
+def impactField = customFieldManager.getCustomFieldObject(impact);
+def confidenceField = customFieldManager.getCustomFieldObject(confidence);
+def effortField = customFieldManager.getCustomFieldObject(effort);
+
+//  
+// grab values from fields
+//
+
+def reachFieldValue = issue.getCustomFieldValue(reachField) as Double
+def impactFieldValue = issue.getCustomFieldValue(impactField) as Double
+def confidenceFieldValue = issue.getCustomFieldValue(confidenceField) as Double
+def effortFieldValue = issue.getCustomFieldValue(effortField) as Double
+
+if (reachFieldValue != null && impactFieldValue != null && confidenceFieldValue != null) {
+    return((reachFieldValue * impactFieldValue * confidenceFieldValue)/(effortFieldValue)).round(2)
+}
+else return(null)
