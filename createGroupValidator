@@ -1,0 +1,26 @@
+// This checks that if the current user is not a member of Business Systems or is a Customer SME (10)
+// that the "Customer Request Type" field has a value
+// AKA they are creating this from our Service Desk.
+ 
+import com.atlassian.jira.component.ComponentAccessor
+ 
+def userManager = ComponentAccessor.getUserManager()
+def groupManager = ComponentAccessor.getGroupManager()
+
+log.info("reporter: " + issue.reporter.name)
+log.info("current: " + currentUser.name)
+log.info("releases: " + userManager.getUserByName("Build Releases"))
+log.info("build: " + userManager.getUserByKey("build+jirareleases@10gen.com").name)
+
+issue.reporter?.name == "jira.automation" || // for manually setting reporter to jira.automation
+issue.reporter?.name == "build+jirareleases@10gen.com" || // for incoming tickets via Automation for Build Releases
+currentUser.equals(userManager.getUserByName("jira.automation")) || // for incoming tickets via Automation for Jira
+currentUser.equals(userManager.getUserByName("it.automation")) || // for incoming tickets via Automation for Jira
+currentUser.equals(userManager.getUserByName("Build Releases")) || // for incoming tickets via Automation for Build Releases
+groupManager.isUserInGroup(issue.reporter?.name, '10gen-business-systems') || // for bizsys team
+groupManager.isUserInGroup(issue.reporter?.name, '10gen-jira-contractors') || // for bizsys jira contractors on bizsys
+groupManager.isUserInGroup(issue.reporter?.name, '10gen-crm-sme') || // for bizsys jira contractors on bizsys
+cfValues['Customer Request Type'] != null
+ 
+// Error message for UI:
+// Please create tickets for CRM Technology via our Service Desk: https://jira.mongodb.org/servicedesk/customer/portal/14 or request Access via Mana
