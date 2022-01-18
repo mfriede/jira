@@ -1,7 +1,8 @@
 // This checks that if the current user is not a member of Business Systems or is a Customer SME (10)
 // that the "Customer Request Type" field has a value
 // AKA they are creating this from our Service Desk.
- 
+// Used during the create transition, select Simple scripted validator [ScriptRunner]. 
+
 import com.atlassian.jira.component.ComponentAccessor
  
 def userManager = ComponentAccessor.getUserManager()
